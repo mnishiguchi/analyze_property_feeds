@@ -7,9 +7,31 @@ How to run this test:
 =end
 
 
-def read_feed_xml
-  xml = File.read("#{Dir.pwd}/data/feed_b.xml")
+def read_feed_xml(filename)
+  xml = File.read("#{Dir.pwd}/data/#{filename}")
 end
+
+
+def read_all_feed_xml_files
+  pattern   = File.join("#{Dir.pwd}/data/feed_*.xml")
+  filenames = Dir.glob(pattern)
+
+  [].tap do |xml_files|
+    filenames.each do |file|
+      xml_files << File.read(file)
+    end
+  end
+end
+
+
+def save_to_file(data, destination)
+  path = "#{Dir.pwd}/data/#{destination}"
+  File.write(path, data)
+end
+
+
+# ---
+# ---
 
 
 describe Feed do
@@ -19,7 +41,9 @@ describe Feed do
   describe "#convert_raw_xml_to_json" do
     it "return json" do
 
-      ap Feed.convert_raw_xml_to_json(raw_xml)
+      filename = "feed_j.xml"
+      raw_xml = read_feed_xml(filename)
+      save_to_file(Feed.convert_raw_xml_to_json(raw_xml), "#{filename}.rb")
 
     end
   end
